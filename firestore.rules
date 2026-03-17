@@ -1,0 +1,66 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: courses
+    // Document ID: auto-generated
+    // Fields:
+    //   - code: string (required, 2-20 chars)
+    //   - name: string (required, 2-100 chars)
+    //   - program: string (required, enum: ['Diploma', 'Asasi'])
+    //   - credits: number (required, 0-10)
+    //   - status: string (required, enum: ['Aktif', 'Arkib'])
+    //   - description: string (optional, max 500 chars)
+    //   - createdAt: timestamp (required)
+    //   - updatedAt: timestamp (required)
+    //   - updatedBy: string (required, email)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.email == "m.syahmi.sam@gmail.com" && request.auth.token.email_verified == true);
+    }
+
+    function isValidCourse(data) {
+      return data.keys().hasAll(['code', 'name', 'program', 'credits', 'status', 'createdAt', 'updatedAt', 'updatedBy']) &&
+             data.code is string && data.code.size() >= 2 && data.code.size() <= 20 &&
+             data.name is string && data.name.size() >= 2 && data.name.size() <= 100 &&
+             data.program in ['Diploma', 'Asasi'] &&
+             data.credits is number && data.credits >= 0 && data.credits <= 10 &&
+             data.status in ['Aktif', 'Arkib'] &&
+             (data.description == null || (data.description is string && data.description.size() <= 500)) &&
+             data.createdAt is timestamp &&
+             data.updatedAt is timestamp &&
+             data.updatedBy is string;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /courses/{courseId} {
+      // Sesiapa yang log masuk boleh melihat senarai kursus
+      allow read: if isAuthenticated();
+      allow create: if isAdmin() && isValidCourse(request.resource.data);
+      allow update: if isAdmin() && isValidCourse(request.resource.data);
+      allow delete: if isAdmin();
+    }
+    
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

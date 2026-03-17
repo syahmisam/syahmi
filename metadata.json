@@ -1,0 +1,5 @@
+{
+  "name": "Sistem Pengurusan Kod Kursus (SPKK)",
+  "description": "Aplikasi pengurusan kod kursus untuk program Diploma dan Asasi dengan penjejakan status aktif/arkib.",
+  "requestFramePermissions": []
+}

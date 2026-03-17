@@ -1,0 +1,55 @@
+{
+  "entities": {
+    "Course": {
+      "title": "Course",
+      "description": "Maklumat kod kursus jabatan.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "Kod unik kursus (cth: ACC101)."
+        },
+        "name": {
+          "type": "string",
+          "description": "Nama penuh kursus."
+        },
+        "program": {
+          "type": "string",
+          "enum": ["Diploma", "Asasi"],
+          "description": "Program pengajian."
+        },
+        "credits": {
+          "type": "number",
+          "description": "Bilangan jam kredit."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Aktif", "Arkib"],
+          "description": "Status semasa kursus."
+        },
+        "description": {
+          "type": "string",
+          "description": "Nota atau penerangan tambahan."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedBy": {
+          "type": "string"
+        }
+      },
+      "required": ["code", "name", "program", "credits", "status"]
+    }
+  },
+  "firestore": {
+    "/courses/{courseId}": {
+      "schema": "Course",
+      "description": "Koleksi semua kod kursus."
+    }
+  }
+}
